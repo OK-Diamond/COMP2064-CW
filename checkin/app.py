@@ -10,7 +10,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS - Allows cross-origin requests
 
-
 def get_ip_address():
     """Get the current IP address of the Pi"""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -80,8 +79,9 @@ def submit():
 
     # Forward data to the robot
     try:
-        response = requests.post(ROBOT_API_ENDPOINT, json=patient_data)
-        if response.status_code == 200:
+        # response = requests.post(ROBOT_API_ENDPOINT, json=patient_data)
+        # if response.status_code == 200:
+        if True:
             return render_template("success.html")
         else:
             return render_template("error.html", error="Robot system unavailable")
@@ -97,7 +97,7 @@ def generate_qr_api():
 
 
 if __name__ == "__main__":
-    print(f"Server running at http://{ip_address}:{PORT}/")
+    print(f"Server running at http://{IP}:{PORT}/")
 
     # Start Flask app
     app.run(host="0.0.0.0", port=PORT, debug=True)
