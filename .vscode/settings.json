@@ -1,6 +1,0 @@
-{
-    "python.defaultInterpreterPath": ".venv/bin/python",
-    "python.terminal.activateEnvironment": true,
-    "python.analysis.autoImportCompletions": true,
-    "python.pythonPath": "/home/okdiamond/Code/Uni/2064/.venv/bin/python"
-}
