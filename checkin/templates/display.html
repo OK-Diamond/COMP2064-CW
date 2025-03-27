@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan to Register</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Our GP Practice</h1>
+        <p>Scan this QR code to add yourself to the waiting list</p>
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code_image }}" alt="QR Code">
+        </div>
+        <p>Our robot assistant will guide you to your appointment when it's your turn</p>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+</html>
