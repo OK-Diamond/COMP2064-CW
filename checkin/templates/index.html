@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>GP Wait Room System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan to Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/styles.css') }}">
 </head>
 <body>
-    <h1>GP Wait Room System</h1>
-    <div class="qr-container">
-        <img src="data:image/png;base64,{{ qr_code_image }}" alt="QR Code">
+    <div class="container">
+        <h1>Welcome to Our GP Practice</h1>
+        <p>Scan this QR code to add yourself to the waiting list</p>
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code_image }}" alt="QR Code">
+        </div>
+        <p>Our robot assistant will guide you to your appointment when it's your turn</p>
     </div>
     <script src="/js/script.js"></script>
 </body>

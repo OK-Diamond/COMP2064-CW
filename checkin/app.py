@@ -10,17 +10,18 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS - Allows cross-origin requests
 
+
 def get_ip_address():
     """Get the current IP address of the Pi"""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect(("8.8.8.8", 80))
-        IP = s.getsockname()[0]
+        ip = s.getsockname()[0]
     except Exception:
-        IP = "127.0.0.1"
+        ip = "127.0.0.1"
     finally:
         s.close()
-    return IP
+    return ip
 
 
 # Consts
