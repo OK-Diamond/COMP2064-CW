@@ -1,0 +1,5 @@
+bugeyes
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/bugeyes/cmake.lock /home/jamestbest/COMP2064-CW/ros_ws/devel/./cmake.lock
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/bugeyes/share/bugeyes/cmake/bugeyesConfig-version.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/bugeyes/cmake/bugeyesConfig-version.cmake
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/bugeyes/share/bugeyes/cmake/bugeyesConfig.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/bugeyes/cmake/bugeyesConfig.cmake
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/bugeyes/lib/pkgconfig/bugeyes.pc /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/pkgconfig/bugeyes.pc

@@ -1,0 +1,6 @@
+Warning: Cannot symlink from /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/lodestone/cmake/lodestoneConfig.cmake to existing file /home/jamestbest/COMP2064-CW/ros_ws/devel/share/lodestone/cmake/lodestoneConfig.cmake
+Warning: Source hash: 34e4017a42b7207d64894424ab65eacf
+Warning: Dest hash: f84cdaf5bf5a6eb6de79dc6f1a9107b0
+Warning: Cannot symlink from /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/pkgconfig/lodestone.pc to existing file /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/pkgconfig/lodestone.pc
+Warning: Source hash: 1005dbd6d64f2e281f498376ca8f5b98
+Warning: Dest hash: 261bcc943ed870bc04765e411c5d5058

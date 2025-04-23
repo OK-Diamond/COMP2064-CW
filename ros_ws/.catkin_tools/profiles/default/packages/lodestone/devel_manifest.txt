@@ -1,0 +1,5 @@
+lodestone
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/cmake.lock /home/jamestbest/COMP2064-CW/ros_ws/devel/./cmake.lock
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/lodestone/cmake/lodestoneConfig-version.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/lodestone/cmake/lodestoneConfig-version.cmake
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/lodestone/cmake/lodestoneConfig.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/lodestone/cmake/lodestoneConfig.cmake
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/pkgconfig/lodestone.pc /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/pkgconfig/lodestone.pc

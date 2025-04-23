@@ -1,0 +1,6 @@
+Warning: Cannot symlink from /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/bugeyes/share/bugeyes/cmake/bugeyesConfig.cmake to existing file /home/jamestbest/COMP2064-CW/ros_ws/devel/share/bugeyes/cmake/bugeyesConfig.cmake
+Warning: Source hash: 27cdf8f3e46b46d9decd1cd62f2e0b45
+Warning: Dest hash: 13d169b8bcb230448cca337dfbfeea59
+Warning: Cannot symlink from /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/bugeyes/lib/pkgconfig/bugeyes.pc to existing file /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/pkgconfig/bugeyes.pc
+Warning: Source hash: de56e59734cb6c1e104d07c241d7921a
+Warning: Dest hash: 6a23bb0019bf2c7fa2b8bf4d62502b23

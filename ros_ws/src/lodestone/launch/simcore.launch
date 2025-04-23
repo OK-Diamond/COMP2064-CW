@@ -1,0 +1,13 @@
+<launch>
+    <include file="$(find lodestone)/launch/sim.launch"/>
+    <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch">
+        <arg name="map_file" value="$(env HOME)/catkin_ws/maps/GP_Mock_Small.yaml"/>
+    </include>
+
+    <param name="locations_dir" value="$(find locmap)/location_data/"/>
+    <rosparam file="$(find lodestone)/config/params.yaml" command="load"/>
+
+    <node pkg="lodestone" type="main.py" name="core_node" output="screen"/>
+    <node pkg="locmap" type="locmap" name="map_locations" args="pub" output="screen" cwd="node"/>
+    <node pkg="bugeyes" type="main.py" name="bug_eyes_gui" output="screen"/>
+</launch>
