@@ -1,0 +1,1 @@
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/locmap/share/roseus/ros/locmap/msg/LocMapLocations.l

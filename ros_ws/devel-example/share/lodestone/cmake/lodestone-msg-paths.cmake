@@ -1,0 +1,1 @@
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/lodestone/cmake/lodestone-msg-paths.cmake
