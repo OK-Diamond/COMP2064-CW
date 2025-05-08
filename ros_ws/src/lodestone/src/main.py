@@ -223,6 +223,7 @@ def update_task():
     else:
         print(f"Found unknown state in update_task got {state}")
 
-subscribe.callback(on_message, [GP_TOPIC, USR_TOPIC, PATIENT_TOPIC], hostname="localhost")
+MQTT_IP= "10.148.187.223"
+subscribe.callback(on_message, [GP_TOPIC, USR_TOPIC, PATIENT_TOPIC], hostname=MQTT_IP)
 
 rospy.spin()

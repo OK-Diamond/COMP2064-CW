@@ -3,6 +3,7 @@
 import threading
 import tkinter as tk
 import paho.mqtt.publish as pub
+import paho.mqtt.client as client
 import time
 import rospy
 from dropplot.shared import get_sim_init_pose
@@ -10,6 +11,9 @@ from dropplot.types import Patient, PatientEncoder, encode_patient
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from locmap.msg import LocMapLocations, LocMapLocation, LocMapGoto
 from actionlib_msgs.msg import GoalID
+
+# from localhost
+MQTT_IP="10.148.187.223"
 
 import json
 
@@ -54,7 +58,7 @@ gp_frame= tk.Frame(root)
 gridget(gp_frame, 1, 0, columnspan=GP_COUNT + 1)
 gp_label= gridget(tk.Label(gp_frame, text= "GPS", height= 3), 0, 0)
 gp_buttons= [
-    gridget(tk.Button(gp_frame, text= f"GP-{i + 1}", width= 5, command= lambda i=i: pub.single(MQTT_GPS_TOPIC, i + 1)), 0, i + 1)
+    gridget(tk.Button(gp_frame, text= f"GP-{i + 1}", width= 5, command= lambda i=i: pub.single(MQTT_GPS_TOPIC, i + 1, hostname=MQTT_IP)), 0, i + 1)
     for i in range(GP_COUNT)
 ]
 
@@ -87,7 +91,7 @@ def locations_callback(locations: LocMapLocations):
     ]
 
     gp_buttons= [
-        gridget(tk.Button(gp_frame, text= gps[loc_i].name, command= lambda loc=gps[loc_i]: pub.single(MQTT_GPS_TOPIC, loc.name[3:])), 0, loc_i + 1)
+        gridget(tk.Button(gp_frame, text= gps[loc_i].name, command= lambda loc=gps[loc_i]: pub.single(MQTT_GPS_TOPIC, loc.name[3:], hostname=MQTT_IP)), 0, loc_i + 1)
         for loc_i in range(len(gps))
     ]
 
@@ -104,7 +108,7 @@ patient_count= 0
 def send_patient_data():
     global patient_count
 
-    pub.single(MQTT_PATIENT_TOPIC, encode_patient(Patient(f"Paul the {patient_count}erdnd", "A good reason")))
+    pub.single(MQTT_PATIENT_TOPIC, encode_patient(Patient(f"Paul the {patient_count}erdnd", "A good reason")), hostname=MQTT_IP)
     patient_count+= 1
 
 add_person_button= gridget(tk.Button(action_frame, text="Add waiting", command=send_patient_data),0, 3)
@@ -129,7 +133,7 @@ state_sub= rospy.Subscriber(STATE_TOPIC, State, state_callback)
 
 def mqtt_loop():
     while True:
-        pub.single(MQTT_USR_TOPIC, usr_slider.get())
+        pub.single(MQTT_USR_TOPIC, usr_slider.get(), hostname=MQTT_IP)
 
         global usr_ping_timer
         usr_ping_timer= USR_PING_DURATION

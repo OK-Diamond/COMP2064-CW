@@ -1,7 +1,7 @@
 <launch>
     <include file="$(find lodestone)/launch/sim.launch"/>
     <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch">
-        <arg name="map_file" value="$(env HOME)/catkin_ws/maps/GP_Mock_Small.yaml"/>
+        <arg name="map_file" value="$(find lodestone)/maps/GP_Mock_Small.yaml"/>
     </include>
 
     <param name="locations_dir" value="$(find locmap)/location_data/"/>
