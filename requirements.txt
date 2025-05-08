@@ -1,0 +1,6 @@
+flask
+qrcode
+requests
+flask-cors
+paho-mqtt
+Pillow
