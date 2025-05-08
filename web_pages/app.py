@@ -29,7 +29,7 @@ PORT = 5002
 IP = get_ip_address()
 ROBOT_ADDRESS = "?.?.?.?:?"
 QR_CODE_URL = f"http://{IP}:{PORT}/register"  # The URL the QR code will point to
-ROBOT_API_ENDPOINT = f"http://{ROBOT_ADDRESS}/patient"  # Where to send user data
+ROBOT_API_ENDPOINT = f"http://{ROBOT_ADDRESS}/user"  # Where to send user data
 
 
 def generate_qr_code():
@@ -67,22 +67,28 @@ def display():
 @app.route("/register")
 def register():
     """Form for patients to enter their information"""
-    return render_template("register.html")
+    page = "register"
+    return render_template(f"{page}.html", page=page)
 
+
+@app.route("/staff-login")
+def staff_login():
+    """Login page for staff"""
+    page = "staff-login"
+    return render_template(f"{page}.html", page=page)
 
 @app.route("/submit", methods=["POST"])
 def submit():
     """Endpoint to receive patient information and forward to robot"""
-    patient_data = {
-        "name": request.form.get("name"),
-        "reason": request.form.get("reason"),
-    }
-
+    # Populate user_data with the form data
+    user_data = {}
+    for i in request.form.keys():
+        user_data[i] = request.form.get(i)
+    print(jsonify(request.form))
     # Forward data to the robot
     try:
-        # response = requests.post(ROBOT_API_ENDPOINT, json=patient_data)
-        # if response.status_code == 200:
-        if True:
+        response = requests.post(ROBOT_API_ENDPOINT, json=user_data)
+        if response.status_code == 200:
             return render_template("success.html")
         else:
             return render_template("error.html", error="Robot system unavailable")

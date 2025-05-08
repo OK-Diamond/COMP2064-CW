@@ -9,14 +9,17 @@
 <body>
     <div class="container">
         <h1>Appointment Checkin</h1>
-        <form action="/submit" method="POST">
+        <form action="/submit-register" method="POST">
             <label for="name">Your Name:</label>
             <input type="text" id="name" name="name" required>
             
-            <label for="reason">Date of Birth:</label>
-            <textarea id="reason" name="reason" rows="3"></textarea>
+            <label for="dob">Date of Birth:</label>
+            <textarea id="dob" name="dob" rows="3"></textarea>
             
-            <button type="submit">Register</button>
+            <div class="button-group">
+                <button type="button" onclick="window.location.href='/staff-login'">Staff Login</button>
+                <button type="submit">Register</button>
+            </div>
         </form>
     </div>
 </body>
