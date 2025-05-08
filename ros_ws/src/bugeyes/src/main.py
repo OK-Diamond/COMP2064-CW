@@ -5,14 +5,26 @@ import tkinter as tk
 import paho.mqtt.publish as pub
 import time
 import rospy
+from dropplot.shared import get_sim_init_pose
+from dropplot.types import Patient, PatientEncoder, encode_patient
+from geometry_msgs.msg import PoseWithCovarianceStamped
 from locmap.msg import LocMapLocations, LocMapLocation, LocMapGoto
 from actionlib_msgs.msg import GoalID
 
+import json
+
+from lodestone.msg import State
+
 rospy.init_node("bugeyes_gui", anonymous=True)
+
+INIT_POSE_TOPIC= rospy.get_param("INIT_POSE_TOPIC")
+STATE_TOPIC= rospy.get_param("STATE_TOPIC")
 
 goto_pub= rospy.Publisher("locmap/goto", LocMapGoto, queue_size=1)
 end_goal_pub= rospy.Publisher("/move_base/cancel", GoalID, queue_size=1)
+init_pose_pub= rospy.Publisher(INIT_POSE_TOPIC, PoseWithCovarianceStamped, queue_size=1)
 
+# not sure how much this certainty will affect it finding the complete position, but it is mostly accurate
 root= tk.Tk()
 
 root.title("Bug eyes")
@@ -24,8 +36,9 @@ GP_COUNT= rospy.get_param("GP_COUNT")
 USR_MIN, USR_MAX= rospy.get_param("USR_MIN"), rospy.get_param("USR_MAX")
 USR_PING_DURATION= rospy.get_param("USR_PING_DURATION")
 
-MQTT_GPS_TOPIC= rospy.get_param("GP_TOPIC")
-MQTT_USR_TOPIC= rospy.get_param("USR_TOPIC")
+MQTT_GPS_TOPIC= rospy.get_param("MQTT_GP_TOPIC")
+MQTT_USR_TOPIC= rospy.get_param("MQTT_USR_TOPIC")
+MQTT_PATIENT_TOPIC= rospy.get_param("MQTT_PATIENT_TOPIC")
 
 usr_ping_timer= 0
 
@@ -85,6 +98,34 @@ gridget(action_frame, 3, 0, columnspan= GP_COUNT + 1)
 action_label= gridget(tk.Label(action_frame, text="Actions", height= 3), 0, 0)
 
 end_goal_button= gridget(tk.Button(action_frame, text="End goal", command=lambda: end_goal_pub.publish(GoalID())), 0, 1)
+send_init_pose_button= gridget(tk.Button(action_frame, text="Send Init pose", command= lambda: init_pose_pub.publish(get_sim_init_pose())), 0, 2)
+
+patient_count= 0
+def send_patient_data():
+    global patient_count
+
+    pub.single(MQTT_PATIENT_TOPIC, encode_patient(Patient(f"Paul the {patient_count}erdnd", "A good reason")))
+    patient_count+= 1
+
+add_person_button= gridget(tk.Button(action_frame, text="Add waiting", command=send_patient_data),0, 3)
+
+info_frame= tk.Frame(root)
+gridget(info_frame, 4, 0, columnspan= GP_COUNT + 1)
+state_label= gridget(tk.Label(info_frame, text="State: `IDLE` Status: `NONE` at 0"), 0, 0)
+patient_label= gridget(tk.Label(info_frame, text="Patients: "), 1, 0)
+
+def state_callback(state: State):
+    state_label.config(text=f"State: `{state.state_name}` Status: `{state.status_name}` at {state.header.stamp}")
+
+    for i, v in enumerate(state.free_gps):
+        if not v:
+            gp_buttons[i].config(bg="grey")
+        else:
+            gp_buttons[i].config(bg="green")
+
+    patient_label.config(text=f"Patients: {state.patients}")
+
+state_sub= rospy.Subscriber(STATE_TOPIC, State, state_callback)
 
 def mqtt_loop():
     while True:
