@@ -36,6 +36,7 @@ free_gps= [False for _ in range(GP_COUNT)]
 waiting_people= []
 
 rospy.init_node('lodestone')
+time_of_last= rospy.Time().now()
 
 goal_pub= rospy.Publisher("/locmap/goto", LocMapGoto, queue_size= 1)
 init_pos_pub= rospy.Publisher(INIT_POSE_TOPIC, PoseWithCovarianceStamped, queue_size= 1)
@@ -88,8 +89,7 @@ def status_callback(status_array: GoalStatusArray):
 
     set_status(new_status)
     if is_terminal_status(new_status):
-        # update_task()
-        pass
+        update_task()
 
 status_sub= rospy.Subscriber(STATUS_TOPIC, GoalStatusArray, status_callback)
 
@@ -136,7 +136,6 @@ def gp_callback(message):
         free_gps[gp_id - 1]= True
 
         # goto(GP_PREFIX + str(gp_id))
-        send_new_status_state()
         update_task()
 
         print(f"GP ping with {GP_PREFIX}{gp_id}")
@@ -189,14 +188,25 @@ def find_free_gp_location():
         print(f"How did we get here? there is a true value in free gps {free_gps}")
 
 def update_task():
-    global state
+    global state, time_of_last
+    diff: rospy.Duration= rospy.Time().now() - time_of_last
+    
+    print(f"TIME DIFF {diff.to_sec()}")
+
+    if diff.to_sec() < 0.5:
+        print(f"Skipping low time of last {time_of_last}")
+        return
+        
+    time_of_last= rospy.Time().now()
 
     # if we are currently doing some action then just return
     if not is_terminal_status(status):
+        print("NON TERMINAL STATE SO IGNORING")
         return
 
     # if there are no free gps or no waiting patients then try and go to the entrance
     if not any(free_gps) or len(waiting_people) == 0:
+        print("NO AVAILABLE")
         set_state(State.IDLE)
         goto(LOC_NAME_ENTRANCE)
         return
@@ -204,11 +214,13 @@ def update_task():
     # here we have a state transition where we have competed the action_lib stuff (it is a terminal status)
     #  and so we need to do the next step depending on the current state
     if state == State.IDLE:
+        print("IDLE -> WAITING")
         # if we are idle then we can start from scratch, find a patient and take them to the gp
         set_state(State.TO_WAITING)
         goto(LOC_NAME_WAITING_ROOM)
         return
     elif state == State.TO_WAITING:
+        print("WAITING -> GP")
         # if we were going to the waiting room then we have now arrived
         # we need to now go to a free gp
         set_state(State.TO_GP)
@@ -216,6 +228,7 @@ def update_task():
         goto(gp_location)
         return
     elif state == State.TO_GP:
+        print("GP -> IDLE")
         # if we were going to the gp then we have now arrived
         # we can now go back to idle
         set_state(State.IDLE)
