@@ -2,19 +2,17 @@
 Main app
 '''
 
-from flask import Flask, render_template, request, jsonify
-import qrcode
-import qrcode.constants
 from io import BytesIO
 import base64
-import requests
-import socket
-from flask_cors import CORS
-from paho.mqtt.client import Client as MQTTClient, MQTTMessage
-from collections import deque
 import json
 import threading
-import time
+import socket
+import requests
+from paho.mqtt.client import Client as MQTTClient, MQTTMessage
+from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
+import qrcode
+import qrcode.constants
 
 
 def get_ip_address() -> str:
@@ -23,7 +21,7 @@ def get_ip_address() -> str:
     try:
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
-    except Exception:
+    except OSError:
         ip = "127.0.0.1"
     finally:
         s.close()
@@ -43,11 +41,12 @@ CORS(app)  # Enable CORS - Allows cross-origin requests
 
 
 class MqttManager:
+    '''Manages MQTT requests for IoT'''
     def __init__(self) -> None:
         self.BROKER = "localhost"
         self.PORT = 1883
         self.TOPIC = "hospital/gp/available"  # Topic to subscribe to
-        self.patient_queue = deque()  # Patient queue
+        self.patient_queue = []
         self.client = None
         self.queue_lock = threading.Lock()  # For thread safety
 
@@ -60,13 +59,11 @@ class MqttManager:
             with self.queue_lock:
                 if self.patient_queue:
                     # Get the next patient from the queue
-                    next_patient = self.patient_queue.popleft()
+                    next_patient = self.patient_queue.pop()
                     print(
                         f"GP available in room {room_number}. Next patient: {next_patient['name']}"
                     )
-
-                    # You could send a message back via MQTT to notify the robot
-                    # about which patient to collect
+      
                     if self.client:
                         notification = {
                             "action": "collect_patient",
@@ -165,11 +162,10 @@ def submit():
     print(jsonify(request.form))
     # Forward data to the robot
     try:
-        response = requests.post(ROBOT_API_ENDPOINT, json=user_data)
+        response = requests.post(ROBOT_API_ENDPOINT, json=user_data, timeout=10)
         if response.status_code == 200:
             return render_template("success.html")
-        else:
-            return render_template("error.html", error="Robot system unavailable")
+        return render_template("error.html", error="Robot system unavailable")
     except requests.RequestException:
         return render_template("error.html", error="Cannot connect to robot system")
 
