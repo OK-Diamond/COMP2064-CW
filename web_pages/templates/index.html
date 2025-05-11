@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan to Register</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Our GP Practice</h1>
-        <p>Scan this QR code to add yourself to the waiting list</p>
-        <div class="qr-code">
-            <img src="data:image/png;base64,{{ qr_code_image }}" alt="QR Code">
-        </div>
-        <p>Our robot assistant will guide you to your appointment when it's your turn</p>
-    </div>
+    <button onclick="window.location.href='/qr'">QR Code Display</button>
+    <button onclick="window.location.href='/register'">User Register</button>
+    <button onclick="window.location.href='/staff-login'">Staff Login</button>
 </body>
 </html>

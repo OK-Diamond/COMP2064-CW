@@ -49,7 +49,6 @@ class MqttManager:
         user = User(payload["name"], payload["dob"], payload["time"])
         # Add the user to the queue
         self.user_queue.put(user)
-        # No more logic is needed as process_gp_available manages matching users and gps
 
     def post_robot(self, name:str, room:int) -> None:
         '''Sends a message to the robot via MQTT'''
@@ -69,24 +68,30 @@ class MqttManager:
         }
         self.client.publish(self.topics.user.topic, json.dumps(data))
 
+    def post_gp_available(self, room:int, status:bool) -> None:
+        '''Posts to the GP available topic'''
+        data = {
+            "room": room,
+            "ready": status
+        }
+        self.client.publish(self.topics.staff.topic, json.dumps(data))
+
     def on_connect(self, client:MQTTClient, _userdata, _flags, rc:int) -> None:
         '''Callback when connecting'''
         print(f"Connected to MQTT broker with result code {rc}")
         client.subscribe(self.topics.staff.topic)
         print(f"Subscribed to {self.topics.staff.topic}")
+        client.subscribe(self.topics.user.topic)
+        print(f"Subscribed to {self.topics.user.topic}")
 
     def on_message(self, _client, _userdata, msg:MQTTMessage):
         '''Callback when receiving a message'''
-        try:
-            payload = json.loads(msg.payload.decode())  # Converts JSON to dict
-            # Datermine whether the message is from a room or from a user
-            match msg.topic:
-                case self.topics.staff.topic:
-                    return self.process_gp_available(payload)
-                case self.topics.user.topic:
-                    return self.process_user_register(payload)
-                case _:
-                    raise ValueError(f"Unexpected topic: {msg.topic}")
-
-        except json.JSONDecodeError:
-            print(f"Error decoding MQTT message: {msg.payload}")
+        payload = json.loads(msg.payload.decode())  # Converts JSON to dict
+        # Datermine whether the message is from a room or from a user
+        match msg.topic:
+            case self.topics.staff.topic:
+                return self.process_gp_available(payload)
+            case self.topics.user.topic:
+                return self.process_user_register(payload)
+            case _:
+                raise ValueError(f"Unexpected topic: {msg.topic}")

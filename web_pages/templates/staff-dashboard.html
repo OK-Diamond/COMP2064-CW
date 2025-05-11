@@ -4,90 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        .queue-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .queue-table th, .queue-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .queue-table th {
-            background-color: #f2f2f2;
-        }
-        .queue-controls {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>Staff Dashboard</h1>
-        <p>Current Patient Queue</p>
-        
-        {% if queue %}
-        <table class="queue-table">
-            <thead>
-                <tr>
-                    <th>Position</th>
-                    <th>Name</th>
-                    <th>Date of Birth</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for patient in queue %}
-                <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ patient.name }}</td>
-                    <td>{{ patient.dob }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>The queue is currently empty.</p>
-        {% endif %}
-        
-        <div class="queue-controls">
-            <button onclick="notifyGPAvailable()">Notify GP Available</button>
-            <button onclick="window.location.href='/'">Back to Home</button>
-        </div>
     </div>
-    
-    <script>
-        function notifyGPAvailable() {
-            // This would typically send an MQTT message in a real system
-            // For this example, we'll use a simpler approach with a form submission
-            fetch('/notify-gp-available', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    room: prompt("Enter room number:", "1")
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    alert(`Notified next patient for room ${data.room}`);
-                    // Reload to update the queue display
-                    location.reload();
-                } else {
-                    alert(data.message || "Error notifying GP available");
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("Error notifying GP available");
-            });
-        }
-    </script>
 </body>
 </html>
