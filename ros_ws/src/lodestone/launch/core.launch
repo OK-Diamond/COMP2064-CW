@@ -6,6 +6,10 @@
     <param name="locations_dir" value="$(find locmap)/location_data/"/>
     <rosparam file="$(find lodestone)/config/params.yaml" command="load"/>
 
+    <!-- This should be the ip addr of the broker -->
+    <param name="MQTT_IP" value="127.0.0.1"/>
+    <param name="IS_SIM" value="false"/>
+
     <node pkg="lodestone" type="main.py" name="core_node" output="screen"/>
     <node pkg="locmap" type="locmap" name="map_locations" args="pub" output="screen" cwd="node"/>
     <node pkg="bugeyes" type="main.py" name="bug_eyes_gui" output="screen"/>

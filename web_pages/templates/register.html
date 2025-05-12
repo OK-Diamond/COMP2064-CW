@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register for Appointment</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'styles.css') }}">
 </head>
 <body>
     <div class="container">
@@ -14,12 +14,9 @@
             <input type="text" id="name" name="name" required>
             
             <label for="dob">Date of Birth:</label>
-            <textarea id="dob" name="dob" rows="3"></textarea>
+            <input type="date" id="dob" name="dob">
             
-            <div class="button-group">
-                <button type="button" onclick="window.location.href='/staff-login'">Staff Login</button>
-                <button type="submit">Register</button>
-            </div>
+            <button type="submit">Register</button>
         </form>
     </div>
 </body>

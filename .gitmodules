@@ -1,3 +1,6 @@
 [submodule "groveRepo"]
 	path = groveRepo
 	url = https://github.com/Seeed-Studio/grove.py.git
+[submodule "web_pages/static/images/OK_Diamond-Icons"]
+	path = web_pages/static/images/OK_Diamond-Icons
+	url = https://github.com/OK-Diamond/OK_Diamond-Icons.git
