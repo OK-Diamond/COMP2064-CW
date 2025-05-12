@@ -21,7 +21,6 @@ from dropplot.shared import status_strs
 #  this is so that the other nodes can access them as well, (e.g. lodestone and bugeyes)
 #  makes it easier to make changes (view the launch params.yaml file for them)
 MQTT_IP= rospy.get_param("MQTT_IP")
-MQTT_IP= "localhost"
 GP_TOPIC= rospy.get_param("MQTT_GP_TOPIC")
 USR_TOPIC= rospy.get_param("MQTT_USR_TOPIC")
 PATIENT_TOPIC= rospy.get_param("MQTT_PATIENT_TOPIC")
