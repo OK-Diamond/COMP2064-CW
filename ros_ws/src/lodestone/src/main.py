@@ -34,6 +34,8 @@ GOTO_TOPIC= rospy.get_param("GOTO_TOPIC")
 GP_PREFIX= rospy.get_param("GP_PREFIX")
 GP_COUNT= rospy.get_param("GP_COUNT")
 
+WAITING_MAX_TIME: float= rospy.get_param("WAITING_TIME_MAX")
+
 USR_THRESHOLD= rospy.get_param("USR_THRESHOLD")
 
 LOC_NAME_ENTRANCE= rospy.get_param("LOC_NAME_ENTRANCE")
@@ -47,7 +49,9 @@ waiting_patients: list= []
 init_log_pub("LODE")
 
 rospy.init_node('lodestone')
-time_of_last= rospy.Time().now()
+time_of_last= rospy.Time.now()
+
+waiting_time_end: rospy.Time= rospy.Time.now()
 
 # The state is internal high-level state, it is basically a linear progression,
 #  first the robot is idle (waiting for gp or patient)
@@ -120,7 +124,7 @@ def send_init_pos() -> None:
 
 def send_new_status_state() -> None:
     message= StateMsg()
-    message.header.stamp= rospy.Time().now()
+    message.header.stamp= rospy.Time.now()
     message.state_code= state.value
     message.state_name= state.name
     message.status_code= status
@@ -223,23 +227,64 @@ def find_free_gp_location():
 def post_pairing() -> None:
     pub.single(PAIRING_TOPIC, encode_data(current_pairing))
 
+def create_current_pairing() -> None:
+    global current_pairing
+
+    patient: Patient = waiting_patients.pop(0)
+    gp_location = find_free_gp_location()
+
+    current_pairing = Pairing(patient, gp_location)
+
+    log_info(f"Created pairing for patient: {patient.name} with {gp_location}")
+
+def is_waiting_state(state: State) -> bool:
+    return state == State.WAITING_AT_GP or state == State.WAITING_AT_PATIENT
+
+def update_waiting_task():
+    if state == State.WAITING_AT_PATIENT:
+        # here we are just waiting in the waiting room for the patient
+        if (waiting_time_end - rospy.Time.now()).to_sec() > 0:
+            return
+
+        # we need to now go to the selected gp
+        log_info(f"update_task has finished waiting for patient")
+        set_state(State.TO_GP)
+
+        gp_location= current_pairing.gp
+        log_info(f"update_task previously selected gp {gp_location} for patient {current_pairing.patient.name}")
+        goto(gp_location)
+    elif state == State.WAITING_AT_GP:
+        if (waiting_time_end - rospy.Time.now()).to_sec() > 0:
+            return
+
+        log_info(f"update_task has finished waiting at {current_pairing.gp}")
+        # if we're waiting at the gp then we can now go back to idle
+        set_state(State.IDLE)
+        update_task()  # recursive to find next task
+
+
 def update_task() -> None:
-    global state, time_of_last, current_pairing
+    global state, time_of_last, current_pairing, waiting_time_end
 
-    diff: rospy.Duration= rospy.Time().now() - time_of_last
+    diff: rospy.Duration= rospy.Time.now() - time_of_last
 
-    if diff.to_sec() < 0.5:
-        log_info(f"Would be skipping small diff in update_task. Diff is {diff.to_sec()}")
+    if diff.to_sec() < 0.2:
+        log_info(f"Small diff in update_task. Diff is {diff.to_sec()}")
 
-    time_of_last= rospy.Time().now()
+    time_of_last= rospy.Time.now()
 
     # just to log bad entries into update_task
     if is_bad_status(status):
         log_warn(f"update_task was called from a bad status update. Found status {status_to_string(status)}", errno.EINVAL)
 
+    # if we are in a waiting state (i.e. waiting at a location then we don't need the move_base status)
+    if is_waiting_state(state):
+        update_waiting_task()
+        return
+
     # if we are currently doing some action then just return; unless we are idle
     if state != State.IDLE and not is_terminal_status(status):
-        log_info("Non terminal state was ignored in update_task")
+        log_info(f"Non terminal status ({status_to_string(status)}) was ignored in update_task non IDLE state ({state.name})")
         return
 
     # if there are no free gps or no waiting patients then try and go to the entrance
@@ -255,32 +300,26 @@ def update_task() -> None:
         # if we are idle then we can start from scratch, find a patient and take them to the gp
         set_state(State.TO_WAITING)
 
-        patient: Patient= waiting_patients.pop(0)
-        gp_location= find_free_gp_location()
-
-        current_pairing= Pairing(patient, gp_location)
-
-        log_info(f"Created pairing for patient: {patient.name} with {gp_location}")
+        create_current_pairing()
         post_pairing()
 
-        log_info(f"update_task is now going to waiting room for {patient}")
+        log_info(f"update_task is now going to waiting room for {current_pairing.patient}")
         goto(LOC_NAME_WAITING_ROOM)
         return
     elif state == State.TO_WAITING:
         # if we were going to the waiting room then we have now arrived
-        # we need to now go to the selected gp
-        set_state(State.TO_GP)
+        #  we need to wait here for a small-time
+        set_state(State.WAITING_AT_PATIENT)
 
-        gp_location= current_pairing.gp
-        log_info(f"update_task has selected gp {gp_location} for patient")
-        goto(gp_location)
+        waiting_time_end= rospy.Time.now() + rospy.Duration(WAITING_MAX_TIME)
         return
     elif state == State.TO_GP:
-        # if we were going to the gp then we have now arrived
-        # we can now go back to idle
-        set_state(State.IDLE)
-        update_task() # recursive to find next task
-        return
+        # now travel to the
+        set_state(State.WAITING_AT_GP)
+
+        waiting_time_end= rospy.Time.now() + rospy.Duration(WAITING_MAX_TIME)
+
+        log_info(f"update_task has arrived at {current_pairing.gp}")
     else:
         log_err(f"Found unknown state in update_task. Got state {state.name} ({state.value})", errno.EINVAL)
 
