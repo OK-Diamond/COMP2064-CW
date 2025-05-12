@@ -126,7 +126,7 @@ if __name__ == "__main__":
     TOPICS = Topics(
         MqttTopic("staff","hospital/gp/available"), # Alerts of GP avaliability
         MqttTopic("user","hospital/patient/register"), # Alerts of user registration
-        MqttTopic("robot","hospital/robot/task") # Posts here to send instructions to the robot
+        MqttTopic("pairing","hospital/pairing") # Alerts of gp-patient pairing
     )
     mqtt = MqttManager(Queue(), RoomList(), TOPICS)
     # Start Flask app
