@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import json
 import threading
 import time
 import tkinter as tk
@@ -10,7 +10,7 @@ import rospy
 from actionlib_msgs.msg import GoalID
 from dropplot.logger import init_log_pub, log_info, LOG_TYPE
 from dropplot.shared import get_sim_init_pose
-from dropplot.types import Patient, encode_patient
+from dropplot.types import Patient, encode_data
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from locmap.msg import LocMapLocations, LocMapGoto, LocMapLocation
 from lodestone.msg import State, Log
@@ -70,6 +70,7 @@ loc_frame: tk.Frame
 gp_frame: tk.Frame
 state_label: tk.Label
 patient_label: tk.Label
+pairing_label: tk.Label
 usr_slider: tk.Scale
 gp_buttons= []#: list[tk.Button]
 loc_buttons= []#: list[tk.Button]
@@ -140,56 +141,57 @@ def create_ui():
         log_text.config(yscrollcommand= scrollbar.set)
 
     def create_actions_ui():
-        global usr_slider, gp_frame, gp_buttons, loc_frame, loc_buttons, state_label, patient_label
+        global usr_slider, gp_frame, gp_buttons, loc_frame, loc_buttons, state_label, patient_label, pairing_label
 
-        usr_label = gridget(tk.Label(left, text= "USR", height= 3), 0, 0)
-        usr_slider = gridget(tk.Scale(left, from_= USR_MIN, to= USR_MAX, orient= tk.HORIZONTAL, resolution= 0.05, length= 300),
+        usr_label= gridget(tk.Label(left, text= "USR", height= 3), 0, 0)
+        usr_slider= gridget(tk.Scale(left, from_= USR_MIN, to= USR_MAX, orient= tk.HORIZONTAL, resolution= 0.05, length= 300),
                              0, 1)
-        usr_ping = gridget(tk.Button(left, text= "PING", height= 1, width= 4), 0, 2)
+        usr_ping= gridget(tk.Button(left, text= "PING", height= 1, width= 4), 0, 2)
 
-        gp_frame = tk.Frame(left)
+        gp_frame= tk.Frame(left)
         gridget(gp_frame, 1, 0, columnspan= GP_COUNT + 1)
-        gp_label = gridget(tk.Label(gp_frame, text= "GPS", height= 3), 0, 0)
-        gp_buttons = [
+        gp_label= gridget(tk.Label(gp_frame, text= "GPS", height= 3), 0, 0)
+        gp_buttons= [
             gridget(tk.Button(gp_frame, text= f"GP-{i + 1}", width= 5,
-                              command= lambda i=i: pub.single(MQTT_GPS_TOPIC, i + 1, hostname= MQTT_IP)), 0, i + 1)
+                              command= lambda i=i: pub.single(MQTT_GPS_TOPIC, json.dumps({"room": i, "ready": True}), hostname= MQTT_IP)), 0, i + 1)
             for i in range(GP_COUNT)
         ]
 
-        loc_frame = tk.Frame(left)
+        loc_frame= tk.Frame(left)
         gridget(loc_frame, 2, 0, columnspan= GP_COUNT + 1)
-        locations_label = gridget(tk.Label(loc_frame, text= "Locations", height= 3), 0, 0)
-        loc_buttons = [
+        locations_label= gridget(tk.Label(loc_frame, text= "Locations", height= 3), 0, 0)
+        loc_buttons= [
 
         ]
 
-        action_frame = tk.Frame(left)
+        action_frame= tk.Frame(left)
         gridget(action_frame, 3, 0, columnspan= GP_COUNT + 1)
-        action_label = gridget(tk.Label(action_frame, text= "Actions", height= 3), 0, 0)
+        action_label= gridget(tk.Label(action_frame, text= "Actions", height= 3), 0, 0)
 
-        end_goal_button = gridget(tk.Button(action_frame, text= "End goal", command= lambda: end_goal_pub.publish(GoalID())),
+        end_goal_button= gridget(tk.Button(action_frame, text= "End goal", command= lambda: end_goal_pub.publish(GoalID())),
                                   0, 1)
 
         def send_init_pos():
             init_pose_pub.publish(get_sim_init_pose())
             log_info("bugeyes/send_init_pos sent initial position data")
 
-        send_init_pose_button = gridget(tk.Button(action_frame, text= "Send Init pose", command= lambda: send_init_pos()), 0,
+        send_init_pose_button= gridget(tk.Button(action_frame, text= "Send Init pose", command= lambda: send_init_pos()), 0,
                                         2)
         def send_patient_data():
             global patient_count
 
             pub.single(MQTT_PATIENT_TOPIC,
-                       encode_patient(Patient(f"Paul the {patient_count}erdnd", f"10.{patient_count}.2025")),
+                       encode_data(Patient(f"Paul the {patient_count}erdnd", f"10.{patient_count}.2025", 0)),
                        hostname= MQTT_IP)
             patient_count += 1
 
-        add_person_button = gridget(tk.Button(action_frame, text= "Add waiting", command= send_patient_data), 0, 3)
+        add_person_button= gridget(tk.Button(action_frame, text= "Add waiting", command= send_patient_data), 0, 3)
 
-        info_frame = tk.Frame(left)
+        info_frame= tk.Frame(left)
         gridget(info_frame, 4, 0, columnspan= GP_COUNT + 1)
-        state_label = gridget(tk.Label(info_frame, text= "State: `IDLE` Status: `NONE` at 0"), 0, 0)
-        patient_label = gridget(tk.Label(info_frame, text= "Patients: "), 1, 0)
+        state_label= gridget(tk.Label(info_frame, text= "State: `IDLE` Status: `NONE` at 0"), 0, 0)
+        patient_label= gridget(tk.Label(info_frame, text= "Patients: "), 1, 0)
+        pairing_label= gridget(tk.Label(info_frame, text= "Current pairing; Patient: None, GP: None"), 2, 0)
 
     create_logs_ui()
     create_actions_ui()
@@ -302,13 +304,15 @@ def locations_callback(locations: LocMapLocations) -> None:
     ]
 
     gp_buttons= [
-        gridget(tk.Button(gp_frame, text= gps[loc_i].name, command= lambda loc=gps[loc_i]: pub.single(MQTT_GPS_TOPIC, loc.name[3:], hostname=MQTT_IP)), 0, loc_i + 1)
+        gridget(tk.Button(gp_frame, text= gps[loc_i].name, command= lambda loc=gps[loc_i]:
+                pub.single(MQTT_GPS_TOPIC, json.dumps({"room": int(loc.name[3:]), "ready": True}),
+                hostname=MQTT_IP)), 0, loc_i + 1)
         for loc_i in range(len(gps))
     ]
 
 # when the state from lodestone is updated
 def state_callback(state: State) -> None:
-    global state_label, patient_label, gp_buttons
+    global state_label, patient_label, gp_buttons, pairing_label
 
     state_label.config(text= f"State: `{state.state_name}` Status: `{state.status_name}` at {state.header.stamp}")
 
@@ -319,6 +323,7 @@ def state_callback(state: State) -> None:
             gp_buttons[i].config(bg= "green")
 
     patient_label.config(text= f"Patients: {state.patients}")
+    pairing_label.config(text= f"Current pairing; Patient: {state.paired_patient or 'None'}, GP: {state.paired_gp or 'None'}")
 
 # sending out usr data for door
 def mqtt_loop() -> None:
