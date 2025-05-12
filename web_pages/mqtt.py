@@ -11,7 +11,7 @@ from common import User, Topics
 
 class MqttManager:
     '''Manages MQTT requests for IoT'''
-    BROKER = "localhost"
+    BROKER = "0.0.0.0"
     PORT = 1883
 
     def __init__(self, user_queue:Queue, room_list:RoomList, topics:Topics) -> None:
