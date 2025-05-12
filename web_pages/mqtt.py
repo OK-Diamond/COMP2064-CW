@@ -30,34 +30,12 @@ class MqttManager:
         self.client = client
         print("MQTT client started")
 
-    def process_gp_available(self, payload: dict) -> None:
-        '''Process a GP availability message'''
-        # Example: {room:3, ready:True}
-        if "room" in payload and payload.get("ready", False):
-            room_number = payload["room"]
-            print(f"GP available in room {room_number}.")
-
-            # Wait for a user
-            print(f"Waiting for user... ({room_number})")
-            user:User = self.user_queue.get()
+    def process_pairing(self, payload: dict) -> None:
+        '''Process when a GP and patient have been paried together'''
+        if "gp" in payload and "user" in payload:
+            room_number: int= payload["gp"]
+            user: User= payload["User"]
             print(f"Please can {user.name} proceed to room {room_number}. The robot will escort you.")
-            self.post_robot(user.name, room_number)
-
-    def process_user_register(self, payload:dict) -> None:
-        '''Process a user signup message'''
-        # Example: {name:"Bob", dob:"2001-03-20", time:98765.4}
-        user = User(payload["name"], payload["dob"], payload["time"])
-        # Add the user to the queue
-        self.user_queue.put(user)
-
-    def post_robot(self, name:str, room:int) -> None:
-        '''Sends a message to the robot via MQTT'''
-        data = {
-            "action": "collect_user",
-            "user_name": name,
-            "room": room,
-        }
-        self.client.publish(self.topics.robot.topic, json.dumps(data))
 
     def post_user(self, user:User) -> None:
         '''Posts to the user topic'''
@@ -88,10 +66,7 @@ class MqttManager:
         '''Callback when receiving a message'''
         payload = json.loads(msg.payload.decode())  # Converts JSON to dict
         # Datermine whether the message is from a room or from a user
-        match msg.topic:
-            case self.topics.staff.topic:
-                return self.process_gp_available(payload)
-            case self.topics.user.topic:
-                return self.process_user_register(payload)
-            case _:
-                raise ValueError(f"Unexpected topic: {msg.topic}")
+        if msg.topic == self.topics.pairing.topic:
+            return self.process_pairing(payload)
+        else:
+            raise ValueError(f"Unexpected topic: {msg.topic}")

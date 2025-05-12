@@ -8,3 +8,6 @@ string status_name
 
 string[] patients
 bool[] free_gps
+
+string paired_patient
+string paired_gp

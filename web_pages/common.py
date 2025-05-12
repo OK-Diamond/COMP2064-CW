@@ -22,4 +22,4 @@ class Topics:
     '''MQTT Topics'''
     staff:MqttTopic
     user:MqttTopic
-    robot:MqttTopic
+    pairing: MqttTopic
