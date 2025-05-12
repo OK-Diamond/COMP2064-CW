@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, render_template, request, jsonify
 import qrcode
 from io import BytesIO
@@ -10,6 +12,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS - Allows cross-origin requests
 
+import paho.mqtt.publish as pub
 
 def get_ip_address():
     """Get the current IP address of the Pi"""
@@ -27,10 +30,10 @@ def get_ip_address():
 # Consts
 PORT = 5002
 IP = get_ip_address()
-ROBOT_ADDRESS = "?.?.?.?:?"
+ROBOT_ADDRESS = "localhost"
 QR_CODE_URL = f"http://{IP}:{PORT}/register"  # The URL the QR code will point to
-ROBOT_API_ENDPOINT = f"http://{ROBOT_ADDRESS}/user"  # Where to send user data
-
+ROBOT_API_ENDPOINT = ROBOT_ADDRESS  # Where to send user data via MQTT
+MQTT_PATIENT_TOPIC= "PATIENT"
 
 def generate_qr_code():
     """Generate a QR code image and return as base64 string"""
@@ -77,7 +80,7 @@ def staff_login():
     page = "staff-login"
     return render_template(f"{page}.html", page=page)
 
-@app.route("/submit", methods=["POST"])
+@app.route("/submit-register", methods=["POST"])
 def submit():
     """Endpoint to receive patient information and forward to robot"""
     # Populate user_data with the form data
@@ -87,11 +90,13 @@ def submit():
     print(jsonify(request.form))
     # Forward data to the robot
     try:
-        response = requests.post(ROBOT_API_ENDPOINT, json=user_data)
-        if response.status_code == 200:
-            return render_template("success.html")
-        else:
-            return render_template("error.html", error="Robot system unavailable")
+        pub.single(MQTT_PATIENT_TOPIC, json.dumps(user_data), hostname= ROBOT_API_ENDPOINT)
+        # response = requests.post(ROBOT_API_ENDPOINT, json=user_data)
+        # if response.status_code == 200:
+        #     return render_template("success.html")
+        # else:
+        #     return render_template("error.html", error="Robot system unavailable")
+        return render_template("success.html")
     except requests.RequestException:
         return render_template("error.html", error="Cannot connect to robot system")
 
