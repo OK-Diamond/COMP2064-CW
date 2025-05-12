@@ -123,7 +123,6 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-/home/jamestbest/catkin_ws/devel/include
 )
 
 ## Declare a C++ library
