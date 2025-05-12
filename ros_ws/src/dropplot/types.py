@@ -1,28 +1,28 @@
 import json
 
 class Patient:
-    def __init__(self, name, reason):
+    def __init__(self, name, dob):
         self.name= name
-        self.reason= reason
+        self.dob= dob
 
     def get_name(self):
         return self.name
 
-    def get_reason(self):
-        return self.reason
+    def get_dob(self):
+        return self.dob
 
     def to_dict(self):
         return {
             "name": self.get_name(),
-            "reason": self.get_reason()
+            "dob": self.get_dob()
         }
 
     @classmethod
     def from_dict(cls, data):
-        return cls(data["name"], data["reason"])
+        return cls(data["name"], data["dob"])
 
     def __str__(self):
-        return f"PATIENT: {self.name} for {self.reason}"
+        return f"PATIENT: {self.name} born {self.dob}"
 
 class PatientEncoder(json.JSONEncoder):
     def default(self, o):
@@ -34,11 +34,12 @@ def encode_patient(patient):
     return json.dumps(patient, cls=PatientEncoder)
 
 def _decode_patient(data):
-    if "name" in data and "reason" in data:
-        return Patient(data["name"], data["reason"])
+    if "name" in data and "dob" in data:
+        return Patient(data["name"], data["dob"])
 
     print("Unable to decode data into patient that does not contain both name and reason values")
     return None
 
 def decode_patient(data):
+    print(f"ATTEMPTING TO DECODE {data}")
     return json.loads(data, object_hook=_decode_patient)
