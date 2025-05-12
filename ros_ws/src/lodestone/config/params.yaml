@@ -6,8 +6,13 @@ MQTT_PATIENT_TOPIC: "PATIENT"
 # ROS
 INIT_POSE_TOPIC: "/initialpose"
 STATUS_TOPIC: "/move_base/status"
+END_GOAL_TOPIC: "/move_base/cancel"
 
+# ROS Custom
 STATE_TOPIC: "/lodestone/state"
+LOG_TOPIC: "/lodestone/logs"
+GOTO_TOPIC: "/locmap/goto"
+LOCATIONS_TOPIC: "/locmap/locations"
 
 USR_MIN: 0
 USR_MAX: 1
@@ -17,5 +22,5 @@ USR_PING_DURATION: 1.0
 GP_COUNT: 5
 GP_PREFIX: "GP-"
 
-LOC_NAME_ENTRANCE: "Enterance"
+LOC_NAME_ENTRANCE: "Entrance"
 LOC_NAME_WAITING_ROOM: "Waiting-room"
