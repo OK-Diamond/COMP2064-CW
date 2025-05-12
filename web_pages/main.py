@@ -42,7 +42,7 @@ class FlaskServer:
 
     def run(self) -> None:
         '''Run the Flask app'''
-        self.app.run(host="0.0.0.0", port=self.PORT, debug=True)
+        self.app.run(host="0.0.0.0", port=self.PORT)
         print(f"Server running at http://{self.IP}:{self.PORT}/")
 
     def generate_qr_code(self) -> str:
