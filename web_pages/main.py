@@ -139,11 +139,11 @@ class FlaskServer:
         '''API endpoint to get current messages'''
         # Remove expired messages (older than 10 seconds)
         current_time = time.time()
-        active_messages = [msg for msg in self.messages 
-                        if current_time - msg['timestamp'] < 10]
+        active_messages = [msg for msg in self.mqtt.message_queue.get_all()
+                        if current_time - msg['timestamp'] < 10000]
 
         # Update the messages list with only active messages
-        self.messages[:] = active_messages
+        self.mqtt.message_queue.overwrite(active_messages)
 
         # Return the active messages as JSON
         return jsonify(active_messages)

@@ -47,6 +47,33 @@ class ThreadsafeList:
                 return None
             return self._items[0]
 
+    def get_all(self) -> list:
+        '''Get all items in the list'''
+        with self._lock:
+            return self._items.copy()
+
+    def clear(self) -> None:
+        '''Clear the list'''
+        with self._lock:
+            self._items.clear()
+
+    def get(self, index:int) -> any:
+        '''Get an item at a specific index'''
+        with self._lock:
+            if index < 0 or index >= len(self._items):
+                return None
+            return self._items[index]
+
+    def add_all(self, data: list) -> None:
+        '''Add a list of items to the list'''
+        with self._lock:
+            self._items.extend(data)
+
+    def overwrite(self, data: list) -> None:
+        '''Overwrite the list with a new list'''
+        with self._lock:
+            self._items = data
+
     def contains(self, data) -> bool:
         '''Check if a item exists in the list'''
         with self._lock:
