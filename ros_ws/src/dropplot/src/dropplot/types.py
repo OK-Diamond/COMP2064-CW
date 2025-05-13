@@ -14,14 +14,14 @@ class Patient:
                 This is the patients name
             dob: str
                 The date of birth of the patient
-            register_time: float
+            time: float
                 The time at which the user sent the registration request as time in
                 seconds since the Epoch
     """
     def __init__(self, name, dob, register_time):
         self.name: str= name
         self.dob: str= dob
-        self.register_time: float= register_time
+        self.time: float= register_time
 
     def __str__(self):
         return f"PATIENT: {self.name} born {self.dob}"
@@ -57,8 +57,8 @@ def encode_data(data): # types based on DataEncoder
 
 def _decode_patient(data: dict):
     """decoding dictionary patient data into Patient class"""
-    if "name" in data and "dob" in data and "register_time" in data:
-        return Patient(data["name"], data["dob"], data["register_time"])
+    if "name" in data and "dob" in data and "time" in data:
+        return Patient(data["name"], data["dob"], data["time"])
 
     log_err("Unable to decode data into patient that does not contain both name and reason values",
             errno.EINVAL)

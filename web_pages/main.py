@@ -12,7 +12,7 @@ from flask_cors import CORS
 import qrcode
 import qrcode.constants
 from mqtt import MqttManager
-from multithread_datatypes import ThreadsafeList as RoomList
+from multithread_datatypes import ThreadsafeList as RoomList, ThreadsafeList
 from common import User, MqttTopic, Topics
 
 def get_ip_address() -> str:
@@ -39,7 +39,7 @@ class FlaskServer:
         self.mqtt = mqtt_manager
 
         # Message queue for display notifications
-        self.messages: list[str,float] = []  # List of {text, timestamp}
+        self.messages = ThreadsafeList()  # List of {text, timestamp}
         # Give MQTT manager access to the message queue
         self.mqtt.message_queue = self.messages
 
