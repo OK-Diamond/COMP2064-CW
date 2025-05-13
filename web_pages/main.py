@@ -12,7 +12,7 @@ from flask_cors import CORS
 import qrcode
 import qrcode.constants
 from mqtt import MqttManager
-from multithread_datatypes import ThreadsafeList as RoomList
+from multithread_datatypes import ThreadsafeList as TList
 from common import User, MqttTopic, Topics
 
 def get_ip_address() -> str:
@@ -35,13 +35,6 @@ class FlaskServer:
 
     def __init__(self, mqtt_manager:MqttManager) -> None:
         self.mqtt = mqtt_manager
-
-
-        # Message queue for display notifications
-        self.messages:list[str,float] = []  # List of {text, timestamp}
-        # Give MQTT manager access to the message queue
-        self.mqtt.message_queue = self.messages
-
 
         # Register context processor to make qr_code available to all templates
         @self.app.context_processor
@@ -139,11 +132,11 @@ class FlaskServer:
         '''API endpoint to get current messages'''
         # Remove expired messages (older than 10 seconds)
         current_time = time.time()
-        active_messages = [msg for msg in self.messages 
-                        if current_time - msg['timestamp'] < 10]
+        active_messages = [msg for msg in self.mqtt.message_queue.get_all()
+                        if current_time - msg['timestamp'] < 10000]
 
         # Update the messages list with only active messages
-        self.messages[:] = active_messages
+        self.mqtt.message_queue.overwrite(active_messages)
 
         # Return the active messages as JSON
         return jsonify(active_messages)
@@ -155,7 +148,7 @@ if __name__ == "__main__":
         MqttTopic("user","hospital/patient/register"), # Alerts of user registration
         MqttTopic("pairing","hospital/pairing") # Alerts of gp-patient pairing
     )
-    mqtt = MqttManager(Queue(), RoomList(), TOPICS)
+    mqtt = MqttManager(Queue(), TList(), TOPICS)
     # Start Flask app
     server = FlaskServer(mqtt)
     server.run()
