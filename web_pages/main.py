@@ -6,7 +6,6 @@ from io import BytesIO
 import base64
 from queue import Queue
 import time
-import json
 from socket import socket, AF_INET, SOCK_DGRAM
 from flask import Flask, render_template as goto_page, request, jsonify
 from flask_cors import CORS
