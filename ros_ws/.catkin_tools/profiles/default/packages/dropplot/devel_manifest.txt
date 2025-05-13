@@ -1,0 +1,6 @@
+dropplot
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/dropplot/cmake.lock /home/jamestbest/COMP2064-CW/ros_ws/devel/./cmake.lock
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/dropplot/share/dropplot/cmake/dropplotConfig.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/dropplot/cmake/dropplotConfig.cmake
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/dropplot/share/dropplot/cmake/dropplotConfig-version.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/dropplot/cmake/dropplotConfig-version.cmake
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/dropplot/lib/python3/dist-packages/dropplot/__init__.py /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/python3/dist-packages/dropplot/__init__.py
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/dropplot/lib/pkgconfig/dropplot.pc /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/pkgconfig/dropplot.pc

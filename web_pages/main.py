@@ -12,7 +12,7 @@ from flask_cors import CORS
 import qrcode
 import qrcode.constants
 from mqtt import MqttManager
-from multithread_datatypes import ThreadsafeRoomList as RoomList
+from multithread_datatypes import ThreadsafeList as RoomList
 from common import User, MqttTopic, Topics
 
 def get_ip_address() -> str:
@@ -35,6 +35,19 @@ class FlaskServer:
 
     def __init__(self, mqtt_manager:MqttManager) -> None:
         self.mqtt = mqtt_manager
+
+
+        # Message queue for display notifications
+        self.messages:list[str,float] = []  # List of {text, timestamp}
+        # Give MQTT manager access to the message queue
+        self.mqtt.message_queue = self.messages
+
+
+        # Register context processor to make qr_code available to all templates
+        @self.app.context_processor
+        def inject_qr_code():
+            return {'qr_code_image': self.generate_qr_code()}
+
         # Setup Flask app
         self.app = Flask(__name__)
         CORS(self.app)  # Enable CORS - Allows cross-origin requests
@@ -42,7 +55,7 @@ class FlaskServer:
 
     def run(self) -> None:
         '''Run the Flask app'''
-        self.app.run(host="0.0.0.0", port=self.PORT, debug=True)
+        self.app.run(host="0.0.0.0", port=self.PORT)
         print(f"Server running at http://{self.IP}:{self.PORT}/")
 
     def generate_qr_code(self) -> str:
@@ -72,6 +85,7 @@ class FlaskServer:
         self.app.route("/submit-register", methods=["POST"])(self.submit_register)
         self.app.route("/submit-staff-login", methods=["POST"])(self.submit_staff_login)
         self.app.route("/generate-qr", methods=["GET"])(self.generate_qr_api)
+        self.app.route("/get-messages")(self.get_active_messages)
 
     def page_template(self, page:str) -> str:
         '''Helper function to render a page with no args'''
@@ -121,12 +135,25 @@ class FlaskServer:
         qr_code_image = self.generate_qr_code()
         return jsonify({"qr_code": qr_code_image})
 
+    def get_active_messages(self):
+        '''API endpoint to get current messages'''
+        # Remove expired messages (older than 10 seconds)
+        current_time = time.time()
+        active_messages = [msg for msg in self.messages 
+                        if current_time - msg['timestamp'] < 10]
+
+        # Update the messages list with only active messages
+        self.messages[:] = active_messages
+
+        # Return the active messages as JSON
+        return jsonify(active_messages)
+
 
 if __name__ == "__main__":
     TOPICS = Topics(
         MqttTopic("staff","hospital/gp/available"), # Alerts of GP avaliability
         MqttTopic("user","hospital/patient/register"), # Alerts of user registration
-        MqttTopic("robot","hospital/robot/task") # Posts here to send instructions to the robot
+        MqttTopic("pairing","hospital/pairing") # Alerts of gp-patient pairing
     )
     mqtt = MqttManager(Queue(), RoomList(), TOPICS)
     # Start Flask app
