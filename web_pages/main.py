@@ -34,14 +34,14 @@ class FlaskServer:
     QR_CODE_URL = f"http://{IP}:{PORT}/register"  # The URL the QR code will point to
 
     def __init__(self, mqtt_manager:MqttManager) -> None:
+        self.app = Flask(__name__)
+
         self.mqtt = mqtt_manager
 
-
         # Message queue for display notifications
-        self.messages:list[str,float] = []  # List of {text, timestamp}
+        self.messages: list[str,float] = []  # List of {text, timestamp}
         # Give MQTT manager access to the message queue
         self.mqtt.message_queue = self.messages
-
 
         # Register context processor to make qr_code available to all templates
         @self.app.context_processor
@@ -49,7 +49,6 @@ class FlaskServer:
             return {'qr_code_image': self.generate_qr_code()}
 
         # Setup Flask app
-        self.app = Flask(__name__)
         CORS(self.app)  # Enable CORS - Allows cross-origin requests
         self.setup_routes()
 
