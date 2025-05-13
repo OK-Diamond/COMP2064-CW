@@ -5,7 +5,7 @@ MQTT related code
 import json
 from queue import Queue
 from paho.mqtt.client import Client as MQTTClient, MQTTMessage
-from multithread_datatypes import ThreadsafeRoomList as RoomList
+from multithread_datatypes import ThreadsafeList as RoomList
 from common import User, Topics
 
 

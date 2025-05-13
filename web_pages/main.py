@@ -12,7 +12,7 @@ from flask_cors import CORS
 import qrcode
 import qrcode.constants
 from mqtt import MqttManager
-from multithread_datatypes import ThreadsafeRoomList as RoomList
+from multithread_datatypes import ThreadsafeList as RoomList
 from common import User, MqttTopic, Topics
 
 def get_ip_address() -> str:
