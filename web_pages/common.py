@@ -23,3 +23,4 @@ class Topics:
     staff:MqttTopic
     user:MqttTopic
     pairing: MqttTopic
+    usr: MqttTopic

@@ -7,6 +7,7 @@ import base64
 from queue import Queue
 import time
 from socket import socket, AF_INET, SOCK_DGRAM
+
 from flask import Flask, render_template as goto_page, request, jsonify
 from flask_cors import CORS
 import qrcode
@@ -25,7 +26,6 @@ def get_ip_address() -> str:
         return "127.0.0.1"
     finally:
         s.close()
-
 
 class FlaskServer:
     '''Manages the Flask server and routes'''
@@ -142,12 +142,12 @@ class FlaskServer:
         # Return the active messages as JSON
         return jsonify(active_messages)
 
-
 if __name__ == "__main__":
     TOPICS = Topics(
         MqttTopic("staff","hospital/gp/available"), # Alerts of GP avaliability
         MqttTopic("user","hospital/patient/register"), # Alerts of user registration
-        MqttTopic("pairing","hospital/pairing") # Alerts of gp-patient pairing
+        MqttTopic("pairing","hospital/pairing"), # Alerts of gp-patient pairing
+        MqttTopic("usr", "hospital/usr"),
     )
     mqtt = MqttManager(Queue(), TList(), TOPICS)
     # Start Flask app

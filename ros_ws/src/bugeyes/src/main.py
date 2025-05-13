@@ -146,7 +146,8 @@ def create_ui():
         usr_label= gridget(tk.Label(left, text= "USR", height= 3), 0, 0)
         usr_slider= gridget(tk.Scale(left, from_= USR_MIN, to= USR_MAX, orient= tk.HORIZONTAL, resolution= 0.05, length= 300),
                              0, 1)
-        usr_ping= gridget(tk.Button(left, text= "PING", height= 1, width= 4), 0, 2)
+        usr_slider.set(USR_MAX / 2)
+        usr_ping= gridget(tk.Button(left, text= "PING", height= 1, width= 4, command= lambda: pub.single(MQTT_USR_TOPIC, USR_MIN)), 0, 2)
 
         gp_frame= tk.Frame(left)
         gridget(gp_frame, 1, 0, columnspan= GP_COUNT + 1)

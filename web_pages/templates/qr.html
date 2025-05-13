@@ -15,5 +15,30 @@
         </div>
         <p>Our robot assistant will guide you to your appointment when it's your turn</p>
     </div>
+
+    <script>
+        const sock= new WebSocket("ws://localhost:5003")
+        let ignore= false
+
+        sock.onopen = function () {
+            console.log("Connected to WebSocket server");
+        };
+
+        sock.onmessage= function (e) {
+            if (!ignore)
+                flash()
+        }
+
+        function flash() {
+            document.body.style.backgroundColor= 'blue'
+            ignore= true
+            setTimeout(() => {
+                document.body.style.backgroundColor= '';
+            }, 1500)
+            setTimeout(() => {
+                ignore= false
+            }, 3000)
+        }
+    </script>
 </body>
 </html>

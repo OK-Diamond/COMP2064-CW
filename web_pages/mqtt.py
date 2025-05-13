@@ -1,10 +1,13 @@
 '''
 MQTT related code
 '''
-
+import asyncio
 import json
+import threading
 from queue import Queue
 from time import time
+
+import websockets
 from paho.mqtt.client import Client as MQTTClient, MQTTMessage
 from multithread_datatypes import ThreadsafeList as TList
 from common import User, Topics
@@ -32,6 +35,37 @@ class MqttManager:
         self.client = client
         print("MQTT client started")
 
+        # websockets for sending usr pings
+        self.web_loop= asyncio.new_event_loop()
+        self.web_thread= threading.Thread(
+            target= self.setup_websocket,
+            daemon= True
+        )
+        self.web_thread.start()
+
+        self.sock_conns = set()
+
+    async def sock_conn_handler(self, sock_conn):
+        """Called when a new socket connects"""
+        self.sock_conns.add(sock_conn)
+        try:
+            async for _ in sock_conn:
+                pass
+        finally:
+            self.sock_conns.discard(sock_conn)
+
+    def setup_websocket(self):
+        """Create the websocket server"""
+        print("WebSocket server running at ws://localhost:5003")
+        self.web_loop= asyncio.new_event_loop()
+        asyncio.set_event_loop(self.web_loop)
+
+        socket = websockets.serve(self.sock_conn_handler, "localhost", 5003)
+
+        self.web_loop.run_until_complete(socket)
+        self.web_loop.run_forever()
+        self.web_loop.close()
+
     def process_pairing(self, payload: dict) -> None:
         '''Process when a GP and patient have been paried together'''
         if "gp" in payload and "patient" in payload:
@@ -49,6 +83,19 @@ class MqttManager:
                 })
         else:
             print("NOT VALID PAYLOAD")
+
+    async def broadcast_flash_event(self):
+        """To every connected socket (should normally only be 1) send the flash event"""
+        for conn in self.sock_conns.copy():
+            try:
+                await conn.send("flash")
+            except:
+                self.sock_conns.remove(conn)
+
+    def process_usr(self, payload: float) -> None:
+        """USR data as input, if beyond threshold then ping display"""
+        if payload < 0.2:
+            self.web_loop.call_soon_threadsafe(asyncio.create_task, self.broadcast_flash_event())
 
     def post_user(self, user:User) -> None:
         '''Posts to the user topic'''
@@ -76,7 +123,8 @@ class MqttManager:
         print(f"Subscribed to {self.topics.user.topic}")
         client.subscribe(self.topics.pairing.topic)
         print(f"Subscribed to {self.topics.pairing.topic}")
-
+        client.subscribe(self.topics.usr.topic)
+        print(f"Subscribed to {self.topics.usr.topic}")
 
     def on_message(self, _client, _userdata, msg:MQTTMessage):
         '''Callback when receiving a message'''
@@ -84,5 +132,7 @@ class MqttManager:
         # Datermine whether the message is from a room or from a user
         if msg.topic == self.topics.pairing.topic:
             return self.process_pairing(payload)
+        if msg.topic == self.topics.usr.topic:
+            return self.process_usr(payload)
         else:
             print(f"Unexpected topic: {msg.topic}")

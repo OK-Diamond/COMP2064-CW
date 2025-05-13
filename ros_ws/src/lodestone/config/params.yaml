@@ -1,6 +1,6 @@
 # MQTT
 MQTT_GP_TOPIC: "hospital/gp/available"
-MQTT_USR_TOPIC: "USR"
+MQTT_USR_TOPIC: "hospital/usr"
 MQTT_PATIENT_TOPIC: "hospital/patient/register"
 MQTT_PAIRING_TOPIC: "hospital/pairing"
 
