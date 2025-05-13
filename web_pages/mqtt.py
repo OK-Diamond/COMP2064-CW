@@ -34,11 +34,12 @@ class MqttManager:
 
     def process_pairing(self, payload: dict) -> None:
         '''Process when a GP and patient have been paried together'''
-        if "gp" in payload and "user" in payload:
+        if "gp" in payload and "patient" in payload:
             room_number: int= payload["gp"]
-            user: User= payload["User"]
-            message_text = f"Please can {user.name} proceed to room {room_number}. The robot will escort you."
-            print(f"Please can {user.name} proceed to room {room_number}. The robot will escort you.")
+
+            user= payload["patient"]
+            message_text = f"Please can {user['name']} proceed to room {room_number}. The robot will escort you."
+            print(f"Please can {user['name']} proceed to room {room_number}. The robot will escort you.")
 
             # Add the message to the queue with current timestamp
             if self.message_queue is not None:
@@ -46,6 +47,8 @@ class MqttManager:
                     'text': message_text,
                     'timestamp': time()
                 })
+        else:
+            print("NOT VALID PAYLOAD")
 
     def post_user(self, user:User) -> None:
         '''Posts to the user topic'''
@@ -71,6 +74,9 @@ class MqttManager:
         print(f"Subscribed to {self.topics.staff.topic}")
         client.subscribe(self.topics.user.topic)
         print(f"Subscribed to {self.topics.user.topic}")
+        client.subscribe(self.topics.pairing.topic)
+        print(f"Subscribed to {self.topics.pairing.topic}")
+
 
     def on_message(self, _client, _userdata, msg:MQTTMessage):
         '''Callback when receiving a message'''
@@ -79,4 +85,4 @@ class MqttManager:
         if msg.topic == self.topics.pairing.topic:
             return self.process_pairing(payload)
         else:
-            raise ValueError(f"Unexpected topic: {msg.topic}")
+            print(f"Unexpected topic: {msg.topic}")

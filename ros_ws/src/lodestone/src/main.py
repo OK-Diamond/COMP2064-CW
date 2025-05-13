@@ -92,7 +92,7 @@ def main():
     # sending the initial position should be delayed slightly to wait for the other nodes
     #  Not sure if there is a way to wait for a specific node to spin up
     if IS_SIM:
-        rospy.Timer(rospy.Duration(3), lambda _: publish_init_pose_message(), oneshot= True)
+        rospy.Timer(rospy.Duration(3), lambda _: (publish_init_pose_message(), publish_goto_message(LOC_NAME_ENTRANCE)), oneshot= True)
 
     goal_pub= rospy.Publisher(GOTO_TOPIC, LocMapGoto, queue_size= 1)
     init_pos_pub= rospy.Publisher(INIT_POSE_TOPIC, PoseWithCovarianceStamped, queue_size= 1)
@@ -124,6 +124,27 @@ def update_task() -> None:
 
     update_state(state, is_terminal_status(status))
 
+def update_state(state: State, terminal_status: bool):
+    """Called to update the current state
+        This function checks if there is a state transition and updates counters"""
+    if state == State.IDLE:
+        if any(free_gps) and len(waiting_patients) > 0:
+            create_current_pairing()
+            publish_pairing_message()
+            to_next_state()
+    elif state in (State.TO_GP, State.TO_WAITING):
+        if terminal_status:
+            to_next_state()
+    elif state in (State.WAITING_AT_PATIENT, State.WAITING_AT_GP):
+        # here we are just waiting in the waiting room for the patient
+        if (waiting_time_end - rospy.Time.now()).to_sec() > 0:
+            return
+
+        to_next_state()
+    else:
+        log_err(f"Found unknown state in update_state. Got state {state.name} ({state.value})",
+                errno.EINVAL)
+
 def enter_state(state: State):
     """Called when a transition from old_state -> state occurs
         This function does any setup for the new state
@@ -132,8 +153,7 @@ def enter_state(state: State):
 
     if state == State.IDLE:
         publish_goto_message(LOC_NAME_ENTRANCE)
-        # recursive to find next task
-        update_task()
+        update_task() # find the next task
     elif state == State.TO_WAITING:
         publish_goto_message(LOC_NAME_WAITING_ROOM)
     elif state == State.WAITING_AT_GP:
@@ -146,33 +166,6 @@ def enter_state(state: State):
         waiting_time_end= rospy.Time.now() + rospy.Duration(WAITING_MAX_TIME)
     else:
         log_err(f"Found unknown state in enter_state. Got state {state.name} ({state.value})",
-                errno.EINVAL)
-
-def update_state(state: State, terminal_status: bool):
-    """Called to update the current state
-        This function checks if there is a state transition and updates counters"""
-    if state == State.IDLE:
-        if any(free_gps) and len(waiting_patients) > 0:
-            create_current_pairing()
-            publish_pairing_message()
-            to_next_state()
-    elif state in (State.TO_GP, State.TO_WAITING):
-        if terminal_status:
-            to_next_state()
-    elif state == State.WAITING_AT_PATIENT:
-        # here we are just waiting in the waiting room for the patient
-        if (waiting_time_end - rospy.Time.now()).to_sec() > 0:
-            return
-
-        to_next_state()
-    elif state == State.WAITING_AT_GP:
-        if (waiting_time_end - rospy.Time.now()).to_sec() > 0:
-            return
-
-        # if we're waiting at the gp then we can now go back to idle
-        to_next_state()
-    else:
-        log_err(f"Found unknown state in update_state. Got state {state.name} ({state.value})",
                 errno.EINVAL)
 
 def to_next_state() -> None:
@@ -372,6 +365,7 @@ def create_current_pairing() -> None:
 
 def publish_pairing_message() -> None:
     """Post the current pairing to MQTT"""
+    print("PUBLISHING PAIRING")
     pub.single(PAIRING_TOPIC, encode_data(current_pairing))
 
 def is_bad_status(status: int) -> bool:
