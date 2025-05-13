@@ -15,7 +15,7 @@ class MqttManager:
     BROKER = "0.0.0.0"
     PORT = 1883
 
-    def __init__(self, user_queue:Queue, room_list:TList, topics:Topics, message_queue=TList) -> None:
+    def __init__(self, user_queue:Queue, room_list:TList, topics:Topics, message_queue=TList()) -> None:
         self.user_queue = user_queue
         self.room_list = room_list
         self.topics = topics
