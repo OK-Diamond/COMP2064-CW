@@ -4,8 +4,9 @@ MQTT related code
 
 import json
 from queue import Queue
+from time import time
 from paho.mqtt.client import Client as MQTTClient, MQTTMessage
-from multithread_datatypes import ThreadsafeList as RoomList
+from multithread_datatypes import ThreadsafeList as TList
 from common import User, Topics
 
 
@@ -14,10 +15,11 @@ class MqttManager:
     BROKER = "0.0.0.0"
     PORT = 1883
 
-    def __init__(self, user_queue:Queue, room_list:RoomList, topics:Topics) -> None:
+    def __init__(self, user_queue:Queue, room_list:TList, topics:Topics, message_queue=None) -> None:
         self.user_queue = user_queue
         self.room_list = room_list
         self.topics = topics
+        self.message_queue: TList = message_queue
 
         # Setup client
         client = MQTTClient()
@@ -35,7 +37,15 @@ class MqttManager:
         if "gp" in payload and "user" in payload:
             room_number: int= payload["gp"]
             user: User= payload["User"]
+            message_text = f"Please can {user.name} proceed to room {room_number}. The robot will escort you."
             print(f"Please can {user.name} proceed to room {room_number}. The robot will escort you.")
+
+            # Add the message to the queue with current timestamp
+            if self.message_queue is not None:
+                self.message_queue.add({
+                    'text': message_text,
+                    'timestamp': time()
+                })
 
     def post_user(self, user:User) -> None:
         '''Posts to the user topic'''

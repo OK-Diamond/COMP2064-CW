@@ -6,6 +6,7 @@ from io import BytesIO
 import base64
 from queue import Queue
 import time
+import json
 from socket import socket, AF_INET, SOCK_DGRAM
 from flask import Flask, render_template as goto_page, request, jsonify
 from flask_cors import CORS
@@ -35,6 +36,19 @@ class FlaskServer:
 
     def __init__(self, mqtt_manager:MqttManager) -> None:
         self.mqtt = mqtt_manager
+
+
+        # Message queue for display notifications
+        self.messages:list[str,float] = []  # List of {text, timestamp}
+        # Give MQTT manager access to the message queue
+        self.mqtt.message_queue = self.messages
+
+
+        # Register context processor to make qr_code available to all templates
+        @self.app.context_processor
+        def inject_qr_code():
+            return {'qr_code_image': self.generate_qr_code()}
+
         # Setup Flask app
         self.app = Flask(__name__)
         CORS(self.app)  # Enable CORS - Allows cross-origin requests
@@ -72,6 +86,7 @@ class FlaskServer:
         self.app.route("/submit-register", methods=["POST"])(self.submit_register)
         self.app.route("/submit-staff-login", methods=["POST"])(self.submit_staff_login)
         self.app.route("/generate-qr", methods=["GET"])(self.generate_qr_api)
+        self.app.route("/get-messages")(self.get_active_messages)
 
     def page_template(self, page:str) -> str:
         '''Helper function to render a page with no args'''
@@ -120,6 +135,19 @@ class FlaskServer:
         '''API endpoint to get QR code image data'''
         qr_code_image = self.generate_qr_code()
         return jsonify({"qr_code": qr_code_image})
+
+    def get_active_messages(self):
+        '''API endpoint to get current messages'''
+        # Remove expired messages (older than 10 seconds)
+        current_time = time.time()
+        active_messages = [msg for msg in self.messages 
+                        if current_time - msg['timestamp'] < 10]
+
+        # Update the messages list with only active messages
+        self.messages[:] = active_messages
+
+        # Return the active messages as JSON
+        return jsonify(active_messages)
 
 
 if __name__ == "__main__":
