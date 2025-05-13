@@ -4,8 +4,8 @@ import paho.mqtt.client as mqtt
 
 # config
 usr_d_port = 4
-mqtt_broker_ip = "192.168.0.113"
-mqtt_topic = "USR"
+mqtt_broker_ip = "localhost"
+mqtt_topic = "hospital/usr"
 publish_delay = 0.5
 
 # MQTT client

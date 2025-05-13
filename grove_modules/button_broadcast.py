@@ -4,8 +4,8 @@ import paho.mqtt.client as mqtt
 
 # config
 button_port = 3
-mqtt_broker_ip = "192.168.0.113"
-mqtt_topic = "GPS"
+mqtt_broker_ip = "localhost"
+mqtt_topic = "hospital/gp/available"
 loop_delay = 0.1
 
 # MQTT client
