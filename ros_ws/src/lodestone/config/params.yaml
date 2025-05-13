@@ -11,7 +11,7 @@ END_GOAL_TOPIC: "/move_base/cancel"
 
 # ROS Custom
 STATE_TOPIC: "/lodestone/state"
-LOG_TOPIC: "/lodestone/logs"
+LOG_TOPIC: "/dropplot/logs"
 GOTO_TOPIC: "/locmap/goto"
 LOCATIONS_TOPIC: "/locmap/locations"
 

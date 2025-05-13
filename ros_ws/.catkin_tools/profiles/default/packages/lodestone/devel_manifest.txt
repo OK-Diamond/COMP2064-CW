@@ -1,14 +1,17 @@
 lodestone
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/cmake.lock /home/jamestbest/COMP2064-CW/ros_ws/devel/./cmake.lock
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/gennodejs/ros/lodestone/_index.js /home/jamestbest/COMP2064-CW/ros_ws/devel/share/gennodejs/ros/lodestone/_index.js
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/gennodejs/ros/lodestone/msg/Log.js /home/jamestbest/COMP2064-CW/ros_ws/devel/share/gennodejs/ros/lodestone/msg/Log.js
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/gennodejs/ros/lodestone/msg/_index.js /home/jamestbest/COMP2064-CW/ros_ws/devel/share/gennodejs/ros/lodestone/msg/_index.js
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/gennodejs/ros/lodestone/msg/State.js /home/jamestbest/COMP2064-CW/ros_ws/devel/share/gennodejs/ros/lodestone/msg/State.js
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/gennodejs/ros/lodestone/msg/Status.js /home/jamestbest/COMP2064-CW/ros_ws/devel/share/gennodejs/ros/lodestone/msg/Status.js
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/_package_Status.lisp /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/_package_Status.lisp
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/_package_Log.lisp /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/_package_Log.lisp
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/_package_State.lisp /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/_package_State.lisp
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/Status.lisp /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/Status.lisp
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/State.lisp /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/State.lisp
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/_package.lisp /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/_package.lisp
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/Log.lisp /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/Log.lisp
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/common-lisp/ros/lodestone/msg/lodestone-msg.asd /home/jamestbest/COMP2064-CW/ros_ws/devel/share/common-lisp/ros/lodestone/msg/lodestone-msg.asd
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/lodestone/cmake/lodestone-msg-paths.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/lodestone/cmake/lodestone-msg-paths.cmake
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/lodestone/cmake/lodestone-msg-extras.cmake /home/jamestbest/COMP2064-CW/ros_ws/devel/share/lodestone/cmake/lodestone-msg-extras.cmake
@@ -17,10 +20,13 @@ lodestone
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/roseus/ros/lodestone/manifest.l /home/jamestbest/COMP2064-CW/ros_ws/devel/share/roseus/ros/lodestone/manifest.l
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/roseus/ros/lodestone/msg/Status.l /home/jamestbest/COMP2064-CW/ros_ws/devel/share/roseus/ros/lodestone/msg/Status.l
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/roseus/ros/lodestone/msg/State.l /home/jamestbest/COMP2064-CW/ros_ws/devel/share/roseus/ros/lodestone/msg/State.l
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/share/roseus/ros/lodestone/msg/Log.l /home/jamestbest/COMP2064-CW/ros_ws/devel/share/roseus/ros/lodestone/msg/Log.l
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/python3/dist-packages/lodestone/__init__.py /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/python3/dist-packages/lodestone/__init__.py
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/python3/dist-packages/lodestone/msg/__init__.py /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/python3/dist-packages/lodestone/msg/__init__.py
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/python3/dist-packages/lodestone/msg/_Log.py /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/python3/dist-packages/lodestone/msg/_Log.py
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/python3/dist-packages/lodestone/msg/_State.py /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/python3/dist-packages/lodestone/msg/_State.py
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/python3/dist-packages/lodestone/msg/_Status.py /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/python3/dist-packages/lodestone/msg/_Status.py
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/lib/pkgconfig/lodestone.pc /home/jamestbest/COMP2064-CW/ros_ws/devel/lib/pkgconfig/lodestone.pc
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/include/lodestone/Status.h /home/jamestbest/COMP2064-CW/ros_ws/devel/include/lodestone/Status.h
+/home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/include/lodestone/Log.h /home/jamestbest/COMP2064-CW/ros_ws/devel/include/lodestone/Log.h
 /home/jamestbest/COMP2064-CW/ros_ws/devel/.private/lodestone/include/lodestone/State.h /home/jamestbest/COMP2064-CW/ros_ws/devel/include/lodestone/State.h
