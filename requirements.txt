@@ -6,4 +6,3 @@ paho-mqtt
 Pillow
 websockets
 asyncio
-threading
