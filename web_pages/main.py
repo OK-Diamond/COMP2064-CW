@@ -36,14 +36,17 @@ class FlaskServer:
     def __init__(self, mqtt_manager:MqttManager) -> None:
         self.mqtt = mqtt_manager
 
+        # Setup Flask app
+        self.app = Flask(__name__)
+        CORS(self.app)  # Enable CORS - Allows cross-origin requests
+        
+        
+
         # Register context processor to make qr_code available to all templates
         @self.app.context_processor
         def inject_qr_code():
             return {'qr_code_image': self.generate_qr_code()}
-
-        # Setup Flask app
-        self.app = Flask(__name__)
-        CORS(self.app)  # Enable CORS - Allows cross-origin requests
+        
         self.setup_routes()
 
     def run(self) -> None:
