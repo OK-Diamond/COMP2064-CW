@@ -8,6 +8,7 @@ MQTT_PAIRING_TOPIC: "hospital/pairing"
 INIT_POSE_TOPIC: "/initialpose"
 STATUS_TOPIC: "/move_base/status"
 END_GOAL_TOPIC: "/move_base/cancel"
+GOAL_TOPIC: "/move_base_simple/goal"
 
 # ROS Custom
 STATE_TOPIC: "/lodestone/state"
