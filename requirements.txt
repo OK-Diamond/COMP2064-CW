@@ -4,3 +4,5 @@ requests
 flask-cors
 paho-mqtt
 Pillow
+websockets
+asyncio
